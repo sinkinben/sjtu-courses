@@ -122,7 +122,10 @@ public:
             mst += cost;
             cnt++;
             for (auto [x, c]: g[vex])
-                if (!vis[x]) q.emplace(x, c);
+                if (!vis[x]) q.emplace(x, c); 
+            // 此处 [x, c] 表示的是顶点 x 离 vis 集合的最短距离，为什么没有取 min 的操作？
+            // 因为优先队列总是会选取 cost 最小的出队，所以队列中有冗余的顶点 x 也没关系
+            // 循环会因为 cnt < n 达到边界而结束
         }
         return mst;
     }

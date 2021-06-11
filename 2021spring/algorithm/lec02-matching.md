@@ -101,7 +101,7 @@ w' : m  > m'
 >   - $(m, w)$ is not a unstable-pair.
 > - Case-2: $m$ proposed to $w$ .
 >   - $w$ rejected $m$ (either right away or later).
->   - $w$ prefers $h'$ (compared with $h$, $h' > h$) .
+>   - $w$ prefers $m'$ (compared with $m$, $m' > m$) .
 >   - $(m, w)$ is not a unstable-pair.
 > - In either case, the pair $(m,w)$ is not a unstable-pair.
 

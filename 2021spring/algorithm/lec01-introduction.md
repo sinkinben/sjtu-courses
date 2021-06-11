@@ -193,3 +193,4 @@ vector<int> dijkstra(int V, int start)
 Exercises: [Leetcode - 743](https://leetcode-cn.com/problems/network-delay-time/description/?utm_source=LCUS&utm_medium=ip_redirect&utm_campaign=transfer2china) .
 
 If there exists $e \in E$ and $l_e < 0$, then Dijkstra algorithm no longer works, we should use Bellman-Ford Algorithm at this situation. 
+
