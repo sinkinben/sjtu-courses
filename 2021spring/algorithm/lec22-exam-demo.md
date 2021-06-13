@@ -38,7 +38,11 @@ $$
 
 ### 2018 Subset Sum
 
-- (2018) Subset sum
+因为平时写的 DP 题目，输入的下标都是从 0 开始的，这里的题是从 1 开始的，所以这里边界条件的下标可能会存在一个 +1 的错误。
+
+
+
+**1. DP(1)**
 
 背包问题的特殊情形，当所有物品的价值等于它的体积，即是本题。
 
@@ -55,10 +59,47 @@ dp[i,j] = \left\{
 $$
 边界条件：
 $$
-dp[0, j] = (j >= a_0) ? a_0 : 0 \\
+dp[1, j] = (j \ge a_1) ? a_1 : 0 \\
 $$
 
 最后返回 `dp[n, t] == t` .
+
+
+
+**2. DP (2)**
+
+$dp[i,j]$ 表示在 $a_1, \dots, a_i$ 中，是否存在一个子集（允许为空集），其总和为 $j$ （用 true / false 表示）。
+
+转移方程：
+$$
+dp[i, j] = \left\{
+\begin{aligned}
+& dp[i-1, j], & \text{ if } j < a_i \\
+& dp[i-1, j] \text{ or } dp[i-1, j-a_i], & \text{ if } j \ge a_i
+\end{aligned}
+\right.
+$$
+初始条件：
+$$
+dp[0, j] = \text{ False} \\
+dp[i, 0] = \text{ True }
+$$
+最后返回 $dp[n, t]$ .
+
+
+
+**3. 回溯法**
+
+```cpp
+subsetSum(int a[], n, t)
+{
+    if (t == 0) return 1;
+    if (n == 0) return 0;
+    return subsetSum(a, n-1, t) || subsetSum(a, n-1, t-a[n-1]);
+}
+```
+
+
 
 
 
