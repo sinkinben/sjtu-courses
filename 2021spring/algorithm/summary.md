@@ -3,6 +3,7 @@
 **常见算法的复杂度**
 
 - GS 稳定匹配算法：$O(n^2)$
+- 强连通分量 Tarjan 算法: $O(V+E)$ .
 - MST
   - Prim: 朴素的 Prim 是 $O(V^2)$ ，堆优化后为 $O(E\log{V})$ .
   - Kruskal: $O(E \log{E})$ .

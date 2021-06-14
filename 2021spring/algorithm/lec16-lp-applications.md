@@ -181,7 +181,7 @@ $$
 
 给出下列 Max-flow 实例的 LP 表示。
 
-![](https://gitee.com/sinkinben/pic-go/raw/master/img/20210614191753.png)
+<img src="https://gitee.com/sinkinben/pic-go/raw/master/img/20210614191753.png" style="width:67%;" />
 
 约束条件包括：
 
