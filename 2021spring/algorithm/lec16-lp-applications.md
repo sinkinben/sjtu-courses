@@ -41,8 +41,8 @@ $$
 > Let $\mathcal{S} = \{S \sube V: s \in S, t \notin S\}$ , that is $\mathcal{S}$ is the set of all $s-t$ cuts in the graph. Then we can model the shortest $s-t$ path problem with the following integer problem:
 > $$
 > \begin{aligned}
-> & \text{minimize }     \sum_{e \in E} w_ex_e \\
-> & \sum_{e \in \delta(S)} x_e \ge 1, & \forall{S \in \mathcal{S}} \\
+> \text{ min }  & \sum_{e \in E} w_ex_e \\
+> \text{ s.t. } & \sum_{e \in \delta(S)} x_e \ge 1, & \forall{S \in \mathcal{S}} \\
 > & x_e \in \{0, 1\}, & \forall{e \in E}
 > \end{aligned}
 > $$
@@ -73,6 +73,7 @@ $$
 
 - 最多具有 $V^2$ 个变量（意味着 $G$ 为完全图，如果不是，那么增添容量为 0 的边，转换为等价的完全图）；
 - 最多具有 $2V^2+V-2$ 个约束条件。
+- 如果没有特别说明，流入 $s$ 的流量一般为 0 ，即 $\sum f_{vs} = 0$ .
 
 一个例子：
 
@@ -131,6 +132,8 @@ $$
 $$
 对应地，需要把 Dual LP 的约束改为 $\sum_{e=(u, v)\in E} y_e \le w(v)$ ，这时候表示的是 Max-Matching 每个顶点最多允许被匹配 $w(v)$ 次。
 
+
+
 ### SC
 
 令 $x_S$ 表示子集 $S$ 是否选中。
@@ -154,6 +157,66 @@ $$
 <img src="https://gitee.com/sinkinben/pic-go/raw/master/img/20210610162049.png" style="width:80%;" />
 
 这里，可以把 $c(S)$ 理解为背包 $S$ 的容量（并且背包只允许放入 $S$ 所指定的物品），$y_e$ 理解为物品 $e$ 的体积，Dual LP 表示的是**使得装入背包的物品的体积之和最大**。有点像 Bin Packing 问题。
+
+
+
+## More Examples
+
+来源于 Refs [1] 的 Exercise 29.2 。
+
+### Shortest Path Again
+
+上面是指定起点和终点，此处只给出起点 $s$ ，求 $s$ 到所有顶点的最短路径，给出该问题的 LP 形式。
+$$
+\begin{aligned}
+\text{ max } & \sum_{v \in V} d_v \\
+\text{ s.t. } & d_v \le d_u + w(u, v) & \forall{(u, v) \in E} \\
+& d_v \ge 0 & \forall{v \in V} \\
+& d_s = 0
+\end{aligned}
+$$
+
+
+### LP for Max-flow
+
+给出下列 Max-flow 实例的 LP 表示。
+
+![](https://gitee.com/sinkinben/pic-go/raw/master/img/20210614191753.png)
+
+约束条件包括：
+
+- 每个边的流量 $\le$ 容量
+- 除了顶点 $s,t$ ，流入等于流出
+- 任意顶点的流量 $\ge 0$ .
+
+$$
+\begin{aligned}
+\text{ max } & f_{sv_1} + f_{sv_2} \\
+\text { s.t. } & f_{sv_1} \le 16 \\
+& f_{sv_2} \le 13 \\
+& \dots \text{omit other edges} \\
+& f_{sv_1} + f_{v_2v_1} = f_{v_1v_2} \\
+& f_{sv_2} + f_{v_3v_2} = f_{v_2v_1} + f_{v_2v_4} \\
+& \dots \text{omit vertices } v_3, v_4 \\
+& f_e \ge 0, \forall{e \in E}
+\end{aligned}
+$$
+
+
+
+
+
+### Bipartite Max-matching
+
+给出二分图 $G = (L,R)$ 的 LP 表示。（添加 $s,t$ 两个顶点，通过 Max-flow 的方法表示。）
+
+<img src="https://gitee.com/sinkinben/pic-go/raw/master/img/20210614192836.png" style="width:50%"/>
+
+
+
+
+
+
 
 ## References
 

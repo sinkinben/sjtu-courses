@@ -239,7 +239,10 @@ $$
 
 - 2020 (For undergraduate) - 锦标赛
 
-参考：https://www.cs.princeton.edu/courses/archive/spr03/cs226/assignments/baseball.html
+参考：
+
+- [1] https://www.cs.princeton.edu/courses/archive/spr03/cs226/assignments/baseball.html
+- [2] https://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-046j-design-and-analysis-of-algorithms-spring-2015/lecture-notes/MIT6_046JS15_lec14B.pdf
 
 构造一个二分图的最大流问题，即构造 $G = (s,t, L, R)$ .
 
@@ -424,7 +427,15 @@ $$
 $$
 第一个约束条件意味着任何 $e \in \delta(S)$ 都必然被选中，也就意味着 $(s_i, t_i)$ 必然相连。
 
-
+Dual LP:
+$$
+\begin{aligned}
+\text{ max } & \sum_{S \in \mathcal{S}} y_S \\
+\text{ s.t. } & \sum_{e \in \delta(S)} y_S \le w_e & \forall{e \in E} \\
+& y_S \in \{0, 1\} & \forall{S \in \mathcal{S}} 
+\end{aligned}
+$$
+跟最短路径的 LP 表示方法类似。
 
 
 
