@@ -35,7 +35,7 @@ $$
 $$
 $c(S)$ 表示子集的权值，$x_S$ 表示是否选择子集 $S$ 。
 
-它的 LP Relaxation 形式为（直观的理解就是，原 SC 问题是 NPC 的，我们需要把条件放宽，以便于我们使用近似算法解决）：
+它的 LP Relaxation 形式为（直观的理解就是，原 SC 问题是 NPC 的，我们需要把条件放宽，不要求 $x_S$ 是一个整数，以便于我们使用近似算法解决）：
 $$
 \begin{aligned}
 \text{ minimize }  & \sum_{S \in \mathcal{S}} c(S)x_{S} \\
