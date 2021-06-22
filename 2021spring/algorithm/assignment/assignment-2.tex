@@ -53,7 +53,7 @@
 
 \title{{\bf Assignment 2 - Submission}}
 \author{Jianbang Xian - 120037910056}
-\date{2021/04/21}
+\date{2021/04/20}
 
 \begin{document}
 \maketitle
@@ -98,7 +98,7 @@ You are given a directed graph $G=(V,E)$ with weights we on its edges $e\in E$. 
     \begin{itemize}
         \item For a Subset Sum instance $I(A, s)$, where $A=\{a_1, \dots, a_n\}$ is a set containing $n$ numbers, and $s$ is the goal sum. And we let $s =  0$ in this case.
         \item Construct directed graph $G=(V,E)$, in which there are $2n$ vertices and $n$ disjoint edges. And  $\forall{e_i \in E}$ we give $e_i$ a weight of $a_i$, as shown in Figure-1(a). For each $u_i$, we add edges from every $v_j$ to it with weight $0$, as shown in Figure-1(b).
-        \item In this case, the instance $I(A,s)$ has a solution if and only if $G$ has a zero-weight-cycle. Since problem Subset Sum is NP-complete, \textsf{ZERO-WEIGHT-CYCLE PROBLEM} is also NP-complete.
+        \item In this case, the instance $I(A,s)$ has a solution if and only if $G$ has a zero-weight-cycle. Since the reduction can be done in polynomial time and Subset Sum is NP-complete, \textsf{ZERO-WEIGHT-CYCLE PROBLEM} is also NP-complete.
     \end{itemize}
 \end{enumerate}
 \newpage
@@ -184,7 +184,7 @@ If there exists one \textbf{check($P'$)} returned \textbf{true}, then the questi
 \newpage
 \noindent \textbf{Solution -2}
 
-Suppose each project needs 3 employees and the number of employees $m=3n$ here. ($m \ge 3n$ is a more "loose" case, which makes the problem simpler, and we consider the worst case here.)
+Suppose each project needs 3 employees and the number of employees $m=3n$ here. ($m > 3n$ is a more "loose" case, which makes the problem simpler, and we consider the worst case here.)
 
 Then we can divide $E$ into 3 size-equal sets $A$, $B$ and $C$, where $|A| = |B| = |C| = m/3$. Now the problem is to find a matching set $M$  among $A$, $B$ and $C$. For each triple $p=(a,b,c) \in M$, assign $p$ to the corresponding project. There can be no less than $k$ projects be satisfied if and only if $|M| \ge k$ .
 
@@ -199,22 +199,92 @@ Let $d\in \mathbb{N}$. The $d$-\textsf{COLORABILITY PROBLEM} is to decide whethe
 \begin{enumerate}[label=\arabic*)]
     \item Given $G(V,E)$ and a function $f:V \rightarrow colors$, we can traverse every edge $e=(u,v)$ in $E$ to verify whether if $f(u) \neq f(v)$ and record the number of colors. If the number of colors is less than or equal $d$, then output \textbf{true}. Otherwise, \textbf{false}. This can be done in polynomial time, thus it's a search problem.
     \item Given $G=(V,E)$, we can construct $G'=(V', E')$ by adding a vertex into $G$ and connecting it to all vertices in $V$. In this case, $G$ is 4-colorable if and only if $G'$ is 5-colorable. This can be done in polynomial time. Similarly, we can reduce 5-COLORABILITY to 6-COLORABILITY, and reduce 6-COLORABILITY to 7-COLORABILITY. 
-    \\
-    Since reduction has the transitivity property, we can reduce 4-COLORABILITY to \\ 7-COLORABILITY.
+    Since reduction has the transitivity property, we can reduce 4-COLORABILITY to 7-COLORABILITY.
 \end{enumerate}
 
 \begin{exercise}
 In the \textsf{MAX CUT} problem, we are given an undirected graph $G$ and an integer $K$ and have to decide whether there is a subset of vertices $S$ such that there are at least $K$ edges that have one endpoint in $S$ and one endpoint in $\bar{S}$. Prove that this problem is NP-complete.
 \end{exercise}
 
+% https://www.iitg.ac.in/deepkesh/CS301/assignment-2/maxcut.pdf
+\bigskip
+\noindent \textbf{Solution}
+\begin{enumerate}[label=\arabic*)]
+    \item Given a graph $G$ and a subset vertices of $S$. We can traverse each edge to count the number of edges whose one endpoint is in $S$ and the another is not. Then compare the result with $K$. This can be done in polynomial time, thus the problem here is a NP problem.
+    \item Prove it's NP-complete by reducing \textbf{Independent Set} to it.
+    \\ \\
+    Consider an instance of Independent Set $I=(G,k)$, in which we want to find an independent set $IS$ with at least $k$ vertices. Now we will make a transformation on $G$.
+    \\ \\
+    As shown in the figure-3, we add a vertex $x$ and $\forall{v \in V}$ connect $v$ and $x$. Then $\forall{e_{(u,v)} \in E}$, "split" $v$ into $v'$ and $v$, so does $u$. Let $G'$ denote the graph after transformation. Now, we want to find a max cut set $S$ of $G'$ so that size of the cut is at least $K$.
+    \\ \\
+    If there exists feasible $IS$, we can add all vertices in $IS$ to $S$. And $\forall{e_{(u,v)} \in E}$, do these operations:
+    \newpage
+    \begin{itemize}
+        \item if $u \in IS$ and $v \notin IS$, add corresponding $v'$ to $S$
+        \item if $u \notin IS$ and $v \in IS$, add corresponding $u'$ to $S$
+        \item if $u \notin IS$ and $v \notin IS$, add $u'$ and $v'$ to $S$
+    \end{itemize}
+    $u$ and $v$ can not both be contained by $IS$ since it's independent set.
+    \\ \\
+    After doing these operations, we can find that each gadget will result in $4$ edges added to $K$. Since $x$ is not in $IS$, it will add $k$ edges to $K$. Hence we can see that there exists independent set in $G$ whose size is at least $k$ if and only if there exists max cut set in $G'$ with cut edges number $K$ is at least $k + 4|E|$.
+    \\ \\
+    Since the Independent Set Problem is NP-complete and the reduction can be done in polynomial time, the Max Cut Problem here is also NP-complete.
+    
+\end{enumerate}
+
+\begin{figure}[htp]
+    \centering
+    \includegraphics[width=12cm]{images/A2Q6.png}
+    \caption{Convert edge $e = (u, v)$ into a gadget}
+    % \label{fig:galaxy}
+\end{figure}
+
+
 \begin{exercise}
 Let \textsf{QUADEQ} be the language of all satisfiable sets of \textit{quadratic equations} over $0/1$ variables(a quadratic equations over $u_1,\ldots,u_n$ has the form $\sum_{i,j\in[n]}a_{i,j}u_iu_j=b$)where addition is modulo $2$. Show that \textsf{QUADEQ} is NP-complete.
 \end{exercise}
+
+\bigskip
+\noindent \textbf{Solution}
+\begin{enumerate}[label=\arabic*)]
+    \item Given a group of \textit{quadratic equations} over $0/1$ and its solution $\textbf{U} = \{u_1, \dots, u_n\}$, we can verify whether if $\textbf{U}$ satisfies the equations group in polynomial time. Thus, QUADEQ is a NP problem.
+    \item Now prove that QUADEQ is NP-complete by reducing \textbf{3SAT} to it.
+    \\ \\
+    Given a \textbf{3SAT} instance $I(n, k)$ with $n$ variables and $k$ clauses, for each clause in the CNF of $I(n, k)$, we can transform it into a group of quadratic equations over $0/1$ variables.
+    \\ \\
+    Suppose that $I(n, k) = \land_{i=1}^{k}C_i$ and the each $C_i$ looks like $(x_{i_1} \lor x_{i_2} \lor x_{i_3})$. $I(n, k) = 1$ is satisfied if and only if:
+    $$
+    \sum_{i=1}^{k}\overline{C_i} = 0
+    $$
+    where $\overline{C_i}$ looks like $(\overline{x_{i_1}} \land \overline{x_{i_2}} \land \overline{x_{i_3}})$, and that means:
+    $$
+    \sum_{i=1}^{k}(\overline{x_{i_1}} * \overline{x_{i_2}} * \overline{x_{i_3}}) = 0
+    $$
+    Assume $k=n^2$, there are $n^2$ clauses in the CNF of intsance $I(n, k)$, then for each $\overline{x_{i_1}}$ in term $\overline{C_i}$, replace it with specific value $a_{i,j}$, and replace $\overline{x_{i_2}}$ , $\overline{x_{i_3}}$ with $u_i$ and $u_j$ (which is similar to converting one-dimensional array to two-dimensional array). Since each of them is either 0 or 1, the replacement is feasible.
+    \\ \\
+    Now, the problem is to solve: $\sum_{i, j \in [1, n]} {a_{i,j}}{u_i}{u_j} = b$ where $b=0$.
+    \\ \\
+    If $b=1$, we can let $u_i = \overline{u_i}$ in the solution $\textbf{U}$ of $\sum_{i, j \in [1, n]} {a_{i,j}}{u_i}{u_j} = 0$. 
+    \\ \\
+    Therefore, we can reduce \textbf{3SAT} to \textbf{QUADEQ} in polynomial time. Since \textbf{3SAT} is NP-complete, \textbf{QUADEQ} is also NP-complete.
+\end{enumerate}
 
 \begin{exercise}
 In a typical auction of $n$ items, the auctioneer will sell the $i$th item to the person that gave it the highest bid. However, sometimes the items sold are related to one another(e.g., think of lots of land that may be adjacent to one another)and so people may be willing to pay a high price to get, say, the three items $\{2,5,17\}$, but only if they get all of them together. In this case, deciding what to sell to whom might not be an easy task. The \textsf{COMBINATORIAL AUCTION PROBLEM} is to decide, given numbers $n,k$, and a list of pairs $\{(S_i,x_i)\}^m_{i=1}$ where $S_i$ is a subset of $[n]$ and $x_i$ is an integer, whether there exist disjoint sets $S_{i_1},\ldots,S_{i_l}$ such that $\sum_{j=1}^lx_{i_j}\geq k$. That is, if $x_i$ is the amount a bidder is willing to pay for the set $S_i$, then the problem is to decide if the auctioneer can sell items and get a revenue of at least $k$, under the obvious condition that he can't sell the same item twice. Prove that \textsf{COMBINATORIAL AUCTION} is NP-complete.
 \end{exercise}
 
+\bigskip
+\noindent \textbf{Solution}
+\begin{enumerate}[label=\arabic*)]
+    \item Given a pairs set $\{(S_i,x_i)\}_{i=1}^{l}$, in which $S_1, \dots, S_l$ are disjoint sets, we can verify whether $\sum_{i=1}^{l}x_i \ge k$ in $O(l)$ time, thus this is a NP problem.
+    \item Prove \textbf{Combinatorial Auction} is NP-complete by reducing \textbf{Exercise - 4} to it.
+    \\ \\
+    We have proved that \textbf{Project Assignment} problem is NP-complete in Exercise-4. In Project Assignment problem, suppose that each project has a revenue, if project $p_i$ is completed, we can get revenue $x_i$. And we want to complete at least $k$ projects, which implies that we want to get revenue at least $\sum_{p \in P'}{x_p}$ ($P'$ is the $k$-projects set we can complete). 
+    \\ \\
+    Since each project $p$ has a employees set $E_p \subseteq E$ and \textbf{each employee can only work on one project}, we can describe the problem in this way: given a employee set $E = \{1, \dots, n\}$, list of pairs $\{(E_i, x_i)_{i=1}^{m}\}$ ($E_i \subseteq E$), and a target revenue $k$. The problem is to decide whether there exists disjoint sets $E_{i_1}, \dots, E_{i_l}$ such that $\sum_{j=1}^{l}x_{i_j} \ge k$. This is exactly the same as the \textbf{Combinatorial Auction} problem here.
+    \\ \\
+    We have proved that Project Assignment problem is NP-complete, hence the Combinatorial Auction problem here is also NP-complete.
+\end{enumerate}
+
 } % end of large
 \end{document}
-

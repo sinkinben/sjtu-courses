@@ -169,7 +169,7 @@ $$
 dp[i, l] = \sum_{w(j, i) \le l}^{(j, i) \in E} dp[j, l-w(j, i)]
 $$
  
-where $w(j, i)$ means the weight of edge $i \rightarrow j$.
+where $w(j, i)$ means the weight of edge $j \rightarrow i$.
  
 The value $dp[t, L]$ is the number of walks from $s$ to $t$ of length exactly $L$ .
 
@@ -498,4 +498,3 @@ Therefore, the total time complexity of algorithm above is $O(E\log{E})$.
 } % end of large
 
 \end{document}
-

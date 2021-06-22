@@ -2,6 +2,7 @@
 
 \usepackage{enumitem} % list item
 \usepackage{graphicx} % insert image
+% pls use pdfLatex to compile
 
 % tikz graph
 \usepackage{tikz}
@@ -56,7 +57,7 @@
 
 \title{{\bf Assignment 3}}
 \author{Xian Jianbang - 120037910056}
-\date{2021/05/09}
+\date{2021/05/11}
 
 \begin{document}
 \maketitle
@@ -100,11 +101,11 @@ An edge of a flow network is called \textbf{critical} if decreasing the capacity
 
 Given an $s-t$ flow network $G$, any edge in the minimum-cut is critical. 
 
-To find such edges, firstly compute max-flow algorithm (Ford-Fulkerson Algorithm) on $G$, then we have 2 methods to find the min-cut:
+To find such edges, firstly compute max-flow algorithm (Ford-Fulkerson Algorithm) on $G$, then we can find the critical edges by 2 steps:
 
 \begin{itemize}
     \item In the residual network $G_f$, find all vertices that $s$ can reach, as set $A$ (including vertex $s$). Let $B = V-A$, any edge starts from $A$ and ends at $B$ is a critical edge. This method can be done in $O(V)$ time (just do DFS starting from $s$).
-    \item In the residual network $G_f$, any edge with $f(e) = c(e)$ is a critical edge. This method can be done in $O(E)$ time (just check all the edges in $G_f$).
+    \item Any edge that starts with vertex in $A$ and ends with vertex in $B$ is a critical edge.
 \end{itemize}
 
 \newpage
@@ -304,13 +305,41 @@ Consider a flow network $G=(V,E)$ with positive edge capacities $\{c(e)\}$. Let 
 
 \bigskip
 
+
+
+
+% ------ another solution -------
 \noindent \textit{Proof} $\Rightarrow$
+
+\bigskip
+
+For each edge $e$ in $E$, let $c(e)$ be the capacity of $e$, and $f(e)$ be the flow value of $e$.
+
+\smallskip
+
+$X$ is a subset of $V$, we let $\text{OUT}(X)$ be the sum of capacities of the edges going out from $X$, and let $\text{IN}(X)$ be The sum of the capacities of the edges into $X$.
+
 \begin{itemize}
     \item When $V = S \cup T$, $(S, T)$ is obviously a minimum cut of $G$. Let the corresponding maximum flow be $f$.
-    \item Suppose there is another minimum cut $(S', T')$, and its corresponding maximum flow is $f'$.
+    \item We know that $\text{cap}(S,T) = \text{OUT}(S) - \text{IN}(S)$ is the \textbf{minimum} value of all cuts.
+    \item Suppose there is another minimum cut $(S', T')$ where $S' \ne S$, and its corresponding maximum flow is $f'$. Then we have:
+    $$
+    \begin{aligned}
+    \text{cap}(S', T')
+    &= \text{OUT}(S') - \text{IN}(S') \\
+    &= \text{OUT}(S) + \text{OUT}(S' - S) - \text{OUT}(S - S') - [\text{IN}(S) + \text{IN}(S'-S) - \text{IN}(S - S')]   \\
+    &= \text{OUT}(S) - \text{IN}(S) + [\text{OUT}(S'-S) - \text{IN}(S'-S)] - [\text{OUT}(S-S') - \text{IN}(S-S')]
+    \end{aligned}
+    $$
+    \item In $G_f$, we have:
+    \begin{enumerate}[label=\arabic*)]
+        \item all vertices in $S'-S$ are also in $T$ (since they are not in $S$ and $V = S \cup T$) , such vertices can reach $t$, hence $\text{OUT}(S'-S) - \text{IN}(S'-S) > 0$.
+        \item all vertices in $S - S'$ are also in $S$, they are reachable from $s$, hence $\text{OUT}(S-S') - \text{IN}(S-S') < 0$.
+    \end{enumerate}
+    \item Therefore, $\text{cap}(S', T') > \text{OUT}(S) - \text{IN}(S) = \text{cap}(S, T)$. Thus $(S', T')$ is not minimum cut and $(S, T)$ is the unique minimum cut.
 \end{itemize}
+
+%  ----- end of another solution
 
 }
 \end{document}
-
-

@@ -1,0 +1,547 @@
+\documentclass{article}
+\usepackage{times}
+\usepackage{a4wide}
+\usepackage{latexsym}
+\usepackage{mathrsfs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{ifthen}
+\usepackage{stmaryrd}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algpseudocode}
+\usepackage{graphics}
+\usepackage{epsfig}
+%\usepackage{ramacros}
+\usepackage{enumitem}
+
+% link
+\usepackage{hyperref}
+\usepackage{hyperref}
+\hypersetup{hidelinks,
+	colorlinks=true,
+	allcolors=black,
+	pdfstartview=Fit,
+	breaklinks=true}
+
+
+\addtolength{\textwidth}{20mm}
+\addtolength{\oddsidemargin}{-10mm}
+\addtolength{\textheight}{18mm}
+\addtolength{\topmargin}{-9mm}
+
+\newcounter{exercise}
+\setcounter{exercise}{0}
+\newcommand{\exercise}{
+        \addtocounter{exercise}{1}
+        \vspace{0.2in}
+        \noindent
+        {\bf \theexercise .}
+        }
+
+\newcommand{\REMARK}[1]{}
+
+
+\newcommand{\NEWPART}{\vspace{.1in}
+              \noindent}
+
+\newcommand{\<}{
+    \langle}
+
+\renewcommand{\>}{
+    \rangle}
+
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+
+\pagestyle{plain} \pagenumbering{arabic}
+
+\title{{\bf Assignment 5} }
+\author{Xian Jianbang - 120037910056}
+\date{2021/06/07}
+
+\begin{document}
+\maketitle
+
+%{\large \noindent
+%\begin{tabular}{lcl}
+%{Jan 17 2007}.
+%\end{tabular}
+%}
+
+% pls use pdfLatex to compile
+
+{\large
+
+\begin{exercise}
+Use layering to get a factor $f$ approximation algorithm for set cover,
+where $f$ is the frequency of the most frequent element. Provide a tight example
+for this algorithm.
+
+\end{exercise}
+
+% \bigskip \noindent \textbf{Solution} \bigskip
+
+
+% Refer to this \href{http://www.tcs.hut.fi/Studies/T-79.7001/2008SPR/slides/wieringa_080207.pdf}{\textcolor{blue}{lecture note}}.
+
+\bigskip \noindent \textbf{Algorithm} \bigskip
+
+Let $U$ denote the elements to be covered, $\mathcal{S} = \{S_1, \dots, S_n\}$ denote the given subsets, and $w(S_i)$ denote the weight of $S_i$.
+
+\begin{algorithm}[htb]
+\caption{$f$-layering($\mathcal{S}, U$)}
+\begin{algorithmic}[1]
+\State $U_0 = U, \mathcal{S}_0 = \mathcal{S}, k = 0$
+\While {$\mathcal{S}_k$ has elements $s$ with $|s| > 0$}
+\State $c = \min(\frac{w(s)}{|s|})$ over all $s \in \mathcal{S}_k$ with $|s| > 0$
+\State $D_k = \{s|s \in \mathcal{S}_k \text{ and }  |s| = 0\}$ 
+\State $W_k = \{s|s \in \mathcal{S}_k \text{ and } w(s) = c \cdot |s| \}$
+\State $U_{k+1} = U - (D_k \cup W_k)$
+\State $\mathcal{S}_{k+1} = \{s'| s \in \mathcal{S}_k, s' = s - (D_k \cup W_k) \}$
+\State $k = k+1$
+\EndWhile \\
+\Return $C = W_0 \cup \dots \cup W_{k-1}$ and $w(C)$
+\end{algorithmic}
+\end{algorithm}
+
+
+\bigskip \noindent \textbf{Tight Example} \bigskip
+
+The tight example is: $U = \{1,2,3\}$, $\mathcal{S} = \{S_1, S_2, S_3\}$ and $S_1 = S_2 = S_3 = \{1,2,3\}, w(S_1) = w(S_2) = w(S_3) = 1$ . Obviously, the $OPT$ cost is 1 here, but the algorithm will output 3 (and the max-frequency is 3).
+
+\newpage
+
+\begin{exercise}
+	Let $G = (V, E)$ be an undirected graph with nonnegative edge costs. $S$, the senders and $R$, the receivers, are disjoint subsets of $V$. The problem is to find a minimum cost subgraph of $G$ such that for every receiver $r$ in $R$, there is at least one sender $s$ in $S$ such that there is a path connecting $r$ to $s$ in the subgraph. Give a factor $2$ approximation algorithm that runs in polynomial time.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+% Refer to the lecture note
+% https://www.comp.nus.edu.sg/~gilbert/CS4234/2015/psets/pset3-solutions.pdf
+
+Let $P = (G, S, R), G = (V,E)$ denote the original problem, and $T=(G', A, B)$ denote the \textbf{\textit{Steiner Tree}} problem, where $A$ is the set of required vertices and $B$ is the set of Steiner vertices.
+
+\bigskip
+
+We solve the problem by reducing $P$ to Steiner Tree problem $T$.
+
+\bigskip \noindent \textbf{Reduction and Algorithm}
+\begin{itemize}
+    \item Add a vertex $v$ and connect $v$ to all senders $s \in S$. Let $K$ denote the set of all the newly added edges, and $\forall{e \in K, \text{cost}(e) = 0}$. Let $G'$ denote the graph after adding edges $K$.
+    \item Let $A = \{v\} \cup R$ be the required vertices of $T$, and $B = V - A$ be the Steiner vertices.
+    \item Execute the General Steiner Tree approximation algorithm on the new graph $G'$.
+    \item If we can find a Steiner Tree $\mathcal{T}$ in $G'$, we can use the edges $\mathcal{T} \cap E$ to form the solution of $P$. (i.e. remove vertex $v$ and its all adjacent edges from $\mathcal{T}$.)
+    \item The resulting graph after removing such edges is 2-approximation of the optimal solution of $P$.
+\end{itemize}
+
+\bigskip \noindent \textbf{Analysis} \bigskip
+
+Let $OPT_P$ denote the optimal solution of $P$, and $OPT_T$ denote the optimal solution of $T$. 
+
+\bigskip
+
+For any feasible solution $\mathcal{S}$ of $P$, if we add any edge $e \in K$ into $\mathcal{S}$, we can build a valid solution for $T$. Thus we have $OPT_T \le OPT_P + \text{cost}(K)$. Since $\forall{e \in K}, \text{cost}(e) = 0$, thus $OPT_T \le OPT_P$.
+
+\bigskip
+
+Let $\mathcal{S}_T$ denote the cost produced by the General Steiner Tree approximation algorithm (it is easy to see that $\mathcal{S}_T \le 2 \cdot OPT_T$), and $\mathcal{S}_P$ denote the cost produced by the algorithm we described above. Since $\forall{e \in K}, \text{cost}(e) = 0$, thus we can have:
+
+$$
+\mathcal{S}_P = \mathcal{S}_T \le 2 \cdot OPT_T \le 2 \cdot OPT_P
+$$
+
+Obviously, all operations described above can be done in polynomial time. Here we get a 2-approximation algorithm for $P$. 
+
+
+\newpage
+
+\begin{exercise}
+	\textbf{(Bin Packing)} Consider a more restricted algorithm than First-Fit, called Next-Fit, which tries to pack the next item only in the most recently started bin. If it does not fit, it is packed in a new bin. Show that this algorithm also achieves factor $2$. Give a factor $2$ tight example.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+Let $s_i$ denote the used space of bin $B_i$. Obviously, we have $s_i + s_{i+1} > 1$, otherwise the items in $B_{i+1}$ could be put in $B_i$.
+
+\bigskip
+
+Let $OPT$ denote the optimal solution, and we have $OPT \ge \sum_{i=1}^{n} a_i$, where $a_i$ is the size of $i$-th item.
+
+\bigskip
+
+Suppose that the Next-fit algorithm will used $m$ bins. When $m$ is even, we have:
+\begin{equation}
+\left\{
+\begin{aligned}
+s_1 + s_2 > 1 \\
+s_3 + s_4 > 1 \\
+\dots \\
+s_{m-1} + s_m > 1
+\end{aligned}
+\right.
+\end{equation}
+
+By summing all the inequalities, we can get:
+\begin{equation}
+\sum_{i=1}^{m} s_i > \frac{m}{2}
+\end{equation}
+
+Since the total used space must be equal to the total size of items, that is to say:
+\begin{equation*}
+OPT \ge \sum_{i=1}^{n} a_i = \sum_{i=1}^{m} s_i > \frac{m}{2}
+\end{equation*}
+
+Hence we have $m < 2 \cdot OPT$ when $m$ is even.
+
+\smallskip
+
+When $m$ is odd, consider the first $m-1$ bins:
+\begin{equation}
+OPT \ge \sum_{i=1}^{k} a_i = \sum_{i=1}^{m-1} s_i > \frac{m-1}{2}
+\end{equation}
+
+where $k (k<n)$ means that there are $k$ items putting in the first $m-1$ bins.
+
+\smallskip
+
+Therefore, for all $m$ we have $m < 2 \cdot OPT$.
+
+\bigskip \noindent \textbf{Tight Example} \bigskip
+
+Suppose there are $n$ items, and their size $a_i$ is:
+\begin{equation}
+\left\{
+\begin{aligned}
+a_i = \frac{1}{2} \\
+a_{i+1} = \frac{2}{n}
+\end{aligned}
+\right.
+, \quad i = 1, 3, 5, \dots
+\end{equation}
+
+Obviously, the optimal solution is:
+$$
+OPT = \frac{n}{2} \times \frac{1}{2} + \frac{n}{2} \times \frac{2}{n} = 1 + \frac{n}{4}
+$$
+
+And Next-fit algorithm will put $(a_i, a_{i+1})$ into the same one bin where $i = 1,3,5,\dots$, thus the solution produced by this algorithm is $m = n/2$.
+
+
+\begin{exercise}
+	\textbf{(Hamilton cycle)} Given an undirected complete graph, each edge is assigned with a nonnegative cost by the function $c$ (eg. the cost for edge $(u,v)$ is $c(u,v)$). Find a Hamilton cycle with the largest cost by the greedy approach, and prove the guarantee factor is $2$.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+Number these vertices from $1$ to $n$. 
+
+\bigskip \noindent \textbf{Greedy Algorithm} 
+\begin{itemize}
+    \item In the first iteration, let current vertex $v$ be the vertex numbered by $1$ (i.e. $v=1$). And the cycle $C$ is empty.
+    \item Find the max-cost $c(v, u)$ where $u$ has been not visited, and let $C = C \cup \{(v, u)\}$, $v = u$.
+    \item Repeat the process above until all vertices are visited.
+    \item Now the traversal stops at $v$, we need to go back to vertex $1$, thus let $C = C \cup \{(v, 1)\}$.
+    \item Output the cycle $C$.
+\end{itemize}
+
+\bigskip \noindent \textbf{Analysis} \bigskip
+
+Suppose the approximate solution produced by the greedy algorithm is $\mathcal{A} = (1, 2, 3, \dots, n, 1)$, and the optimal solution is $OPT = (a_1, a_2, \dots, a_n, a_1)$ (where $OPT$ is a permutation from 1 to $n$).
+
+\bigskip
+
+Now we need to prove that $cost(OPT) \ge 2 \cdot cost(\mathcal{A})$. According to the greedy strategy described above, we have:
+\begin{equation}
+\begin{aligned}
+c(1,2) \ge c(1, i), \quad & \forall{i > 1} \\
+c(2,3) \ge c(2, i), \quad & \forall{i > 2} \\
+\dots \\
+c(n-1, n) \ge c(n-1, i), \quad & \forall{i > n-1}
+\end{aligned}
+\end{equation}
+
+Since $c(u, v) = c(v, u)$ for any $u, v$ in the graph, we have:
+\begin{equation}
+\begin{aligned}
+c(2, 1) \ge c(i, 1), \quad & \forall{i > 1} \\
+c(3, 2) \ge c(i, 2), \quad & \forall{i > 2} \\
+\dots \\
+c(n, n-1) \ge c(i, n-1), \quad & \forall{i > n-1}
+\end{aligned}
+\end{equation}
+
+More generally, $(a_i, a_i + 1)$ is adjacent in $\mathcal{A}$, thus we can have:
+\begin{equation}
+\begin{aligned}
+c(a_i, a_j) \le c(a_i, a_{i}+1), \text{ when } a_i < a_j \\
+c(a_i, a_j) \le c(a_j, a_{j}+1), \text{ when } a_i > a_j
+\end{aligned}
+\end{equation}
+
+where the number $n+1$ denote the vertex-$1$. By summing these two inequalities, we have:
+$$
+c(a_i, a_j) \le 2c(a_i, a_j) \le c(a_i, a_i + 1) + c(a_j, a_j + 1)
+$$
+
+Therefore, we can have:
+\begin{equation}
+\begin{aligned}
+cost(OPT) &= c(a_1, a_2) + c(a_2, a_3) + \dots + c(a_{n-1}, a_n) + c(a_n, a_1) \\
+& \le c(a_1, a_1 + 1) + c(a_2, a_2 + 1) + \\
+& \quad \  c(a_2, a_2 + 1) + c(a_3, a_3 + 1) + \\
+& \quad \  \dots \\
+& \quad \  c(a_{n-1}, a_{n-1} + 1) + c(a_n, a_n + 1) + \\
+& \quad \  c(a_n, a_n + 1) + c(a_1, a_1 + 1) \\
+& = 2 \cdot [c(a_1, a_1 + 1) + c(a_2, a_2 + 1) + \dots + c(a_n, a_n+1)] \\
+& = 2 \cdot \text{cost}(\mathcal{A})
+\end{aligned}
+\end{equation}
+
+Now we give a 2-approximation greedy algorithm for this problem.
+
+\begin{exercise}
+	Given a directed graph $G=(V,E)$, we need to pick a maximum cardinality set of edges from $E$ so that the resulting subgraph is acyclic. Find a factor $\frac{1}{2}$ approximate algorithm for this problem.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+The algorithm is as follows:
+\begin{itemize}
+    \item Arbitrarily number all the vertices in $V$ from $1$ to $n$, let $f(v)$ denote the identifier number of vertex $v \in V$.
+    \item For any edge $(u, v) \in E$, if $f(u) < f(v)$, mark $(u,v)$ as a \textbf{\textit{forward edge}}. If $f(u) > f(v)$, mark $(u, v)$ as a \textbf{\textit{backward edge}}. Remove $(u, v)$ from $G$ if $f(u) = f(v)$ (which implies $u = v$) .
+    \item Let $F$ denote the set of forward edges, and $B$ denote the set of backward edges.
+    \item Pick the larger set from $F$ and $B$.
+\end{itemize}
+
+\bigskip \noindent \textbf{Correctness} \bigskip
+
+We need to prove that there is no cycle in neither $F$ nor $B$.
+
+\bigskip
+
+Suppose we picked $F$. If there exists a cycle $C = (v_1, v_2, \dots, v_k, v_1)$ in $F$, since any edge in $F$ is forward, thus we have $f(v_1) < f(v_2) < \dots < f(v_k) < f(v_1)$. $f(v_1) < f(v_1)$ is obviously a contradiction, hence there must be no cycle in $F$. The same is true when we picked $B$.
+
+\bigskip
+Obviously, all the operations described above can be done in polynomial time. Thus the algorithm is a valid approximation algorithm.
+
+\bigskip \noindent \textbf{Analysis} \bigskip
+
+Let $S$ denote the result produced by our algorithm, i.e. $|S| = \max(|F|, |B|)$. Since $F \cup B = E$, $F \cap B = \O$ and $|E| \ge OPT$, we have:
+$$
+2|S| \ge |F| + |B| = |E| \ge OPT
+$$
+
+Therefore the guarantee factor is $1/2$. 
+
+\newpage \noindent \textbf{Tight Example} \bigskip
+
+Consider $G = (V,E)$, where $|V| = 2n+1$ and $|E| = 2n$. And $G$ "looks like" a single list:
+$$
+v_1 \rightarrow v_2 \rightarrow \dots \rightarrow v_n \rightarrow v_{n+1} \leftarrow v_{n+2} \leftarrow \dots \leftarrow v_{2n+1}
+$$
+
+Obviously, $OPT = 2n$ here, while our algorithm will output $n$.
+
+
+\begin{exercise}
+	\textbf{(Knapsack)} Given a set $S = \{a_1, ... , a_n\}$ of objects, with specified non-negative weights and profits, $w_i,p_i$ respectively, and a "knapsack capacity" $B (w_i \le B)$, find a subset of objects whose total weight is bounded by $B$ and total profit is maximized.
+	
+	1. Consider two types of greedy algorithms for the knapsack problem. Sort the objects by decreasing \textbf{ratio of profit to weight} or only by \textbf{profit}, and then greedily pick objects in this order. Show that these two algorithms can be made to perform arbitrarily badly.
+	
+	2. Combining these two greedy algorithm, pick the more profitable solution in these two algorithms' results. Show that this algorithm achieves an approximation factor of $2$.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution - 1} 
+
+\begin{itemize}
+    \item Sort by ratio of profit to weight. 
+    
+    Consider there are two items, ${profit} = [1, B-1]$ and ${weight} = [1, B]$ where $B (B > 2)$ is the capacity. Obviously, the greedy algorithm will choose the first item, while choosing the second one is the optimal solution in such case.
+    
+    \item Sort by profit.
+    
+    Consider there are $n+1 (n \ge 2)$ items, and their weights and profits are:
+    $$
+    \begin{aligned}
+    profit &= [100, &99, \quad &99, &\dots, &99] \\
+    weight &= [B, &\frac{B}{n}, \quad &\frac{B}{n}, &\dots, &\frac{B}{n}]
+    \end{aligned}
+    $$
+    where $B$ is the capacity.
+    
+    Obviously, the optimal solution is $OPT = 99n$ (choose the last $n$ items). However, the greedy algorithm here would choose the first item, which just get profit $100$.
+\end{itemize}
+
+\bigskip \noindent \textbf{Solution - 2} 
+
+Let:
+\begin{itemize}
+    \item $\mathcal{A}$ denote the solution produced by ratio-greedy algorithm,
+    \item $\mathcal{B}$ denote the solution produced by profit-greedy algorithm, and
+    \item $\mathcal{S} = \max(\mathcal{A}, \mathcal{B})$ be the solution produced by this algorithm here.
+\end{itemize}
+
+Now we need to prove that $\mathcal{S} \ge \frac{1}{2} \cdot OPT$. And we prove it by proving:
+$$
+2 \mathcal{S} \ge \mathcal{A} + \mathcal{B} \ge OPT
+$$
+
+\textbf{Proof}
+
+\begin{itemize}
+    \item Try to put items into knapsack in the descending order of $p_i / w_i$, suppose $a_k$ is the first item that we can't put into the knapsack.
+    \item If the items can be divided, then optimal solution should be:
+    $$
+    {OPT}' = p_1 + p_2 + \dots + p_{k-1} + \alpha p_k, \quad 0 < \alpha < 1
+    $$
+    where $\alpha p_k$ denote the profit of a partition of $a_k$ (since we divided $a_k$ into pieces to fit the knapsack) .
+    \item Since the item can be divided into pieces, the optimal solution of "divided-knapsack"  $OPT'$ should satisfies $OPT' \ge OPT$.
+    \item Moreover, according to the algorithm here, we have $\mathcal{S} \ge p_k$ (since $\mathcal{S} \ge \mathcal{B} \ge p_k$). Otherwise we would choose items sorted by $p_i$ instead of $p_i/w_i$.
+    \item And we have $\mathcal{S} \ge \mathcal{A} = p_1 + p_2 + \dots + p_{k-1}$. Therefore,
+    $$
+    2 \mathcal{S} \ge p_1 + p_2 + \dots + p_k > OPT' \ge OPT
+    $$
+\end{itemize}
+
+
+
+\begin{exercise}
+	\textbf{(Maximum Cut)} Given an undirected graph $G=(V,E)$, the \textit{cardinality maximum cut problem} asks for a partition of $V$ into sets $S$ and $\bar{S}$ so that the number of edges running between these sets is maximized. Find a factor $2$ approximation algorithm for this problem.
+\end{exercise}
+
+\bigskip \noindent \textbf{Algorithm} \bigskip
+
+For any $v \in V$, we randomly put it into $S$ with the probability $1/2$, finally we get $S$. And any edges between $S$ and $\bar{S}$ are what we want.
+
+\bigskip \noindent \textbf{Analysis} 
+\begin{itemize}
+    \item Let $OPT$ denote the optimal solution, and $\mathcal{A}$ denote the solution produced by our algorithm.
+    \item Obviously, we have $OPT \le |E|$.
+    \item This algorithm will output a valid partition, now we prove the guarantee factor.
+    \item For any edge $(u, v) \in E$, the probability that $u, v$ are in different sets is $1/2$, since:
+    $$
+    \textbf{Pr}[u \in S, v \in \bar{S}] + \textbf{Pr}[u \in \bar{S}, v \in S] = \frac{1}{4} + \frac{1}{4} = \frac{1}{2} 
+    $$
+    \item That is to say, each edge $e \in E$ has a $1/2$ probability of being selected. Therefore,
+    $$
+    \textbf{E}[\mathcal{A}] = \sum_{e \in E} \textbf{Pr}[e \text{ is selected}] = \sum_{e \in E} \frac{1}{2} = \frac{|E|}{2} \ge \frac{OPT}{2}
+    $$
+    \item Hence our algorithm is 2-approximation.
+\end{itemize}
+
+\newpage
+
+\begin{exercise}
+	Consider the following problem: Given an undirected graph and compute the number of matchings (not the cardinality of a single matching, but the number of different ways of matching) in the graph . Show that if we have an $\alpha$-approximation algorithm for it for some constant $\alpha$, then we also have a PTAS.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution}
+\begin{itemize}
+    \item Let $f$ denote the $\alpha$ - \textit{approximation} algorithm. According to the definition of $\alpha$ - \textit{approximation} algorithm, we have:
+    $$
+    (1 - \alpha) \cdot OPT \le f(G) \le (1+\alpha) \cdot OPT
+    $$
+    \item Repeat the graph $G$ for $k$ times to get graph $G'$. Since both vertices and edges has been repeated $k$ times in $G'$, thus $OPT' = OPT^k$.
+    \item Apply $f$ on $G'$, then we have:
+    $$
+    \begin{aligned}
+    (1 - \alpha) \cdot OPT^k & \le f(G') & \le (1+\alpha) \cdot OPT^k \\
+    \sqrt[k]{(1 - \alpha)} \cdot OPT & \le \sqrt[k]{f(G')} & \le \sqrt[k]{(1+\alpha)} \cdot OPT
+    \end{aligned}
+    $$
+    \item When the $k$ get larger, the $\sqrt[k]{f(G')}$ can be arbitrarily close to $OPT$.
+    \item Thus we can say that: for any $\varepsilon > 0$, there always exists a $\varepsilon$ - \textit{approximation} algorithm, i.e. we have a PTAS.
+\end{itemize}
+
+
+
+
+
+
+\begin{exercise}
+	Let $G$ be a complete undirected graph in which all edge lengths are either $1$ or $2$. Note, that edge lengths satisfy the triangle inequality. Give a factor $4/3$ approximation algorithm for the TSP in this special class of graphs.
+	
+	Hint: A $2$-matching in a graph $G$ is a subset of edges $M$, such that every vertex is incident to exactly $2$ edges of $M$. A minimum cost $2$-matching can be computed in polynomial time.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+% Refer to the paper \href{https://www.jstor.org/stable/3690150?seq=1#metadata_info_tab_contentsl-optimization-fall-2009/lecture-notes/MIT15_083JF09_lec22.pdf}{\textcolor{blue}{\textit{The Traveling Salesman Problem with Distances One and Two}}}.
+
+\smallskip
+
+Suppose $G = (V, E)$ and $|V| = n, |E| = n(n-1)/2$. When $n \le 3$, the conclusion is obvious. We only consider $n \ge 4$ here.
+
+\bigskip \noindent \textbf{Algorithm} \bigskip
+
+Firstly, we compute the sub-graph of minimum cost 2-matching $G'$ (which can be done in polynomial time) , obviously $G'$ consists of some disjoint cycles. Then we merge all these cycles in the following steps:
+
+\begin{enumerate}[label=\arabic*)]
+    \item Pick out any different two cycles $C_1, C_2$ from $G'$.
+    \item If there exists any edge whose weight is $2$ in $C_1$ or $C_2$, we merge them in the way shown in Figure-1. 
+    
+    \newpage
+    
+    For example, if $e_1 = (u,v) \in C_1$ and $w(e_1) = 2$, then we pick out any edge $e_2 = (u', v') \in C_2$, and merge $C_1$ and $C_2$ via replacing $(u, v), (u', v')$ with $(u, u'), (v, v')$.
+    
+    \begin{figure}[htp]
+    \centering
+    \includegraphics[width=9cm]{images/A5Q9.png}
+    \caption{Merge 2 cycles of $G'$}
+    \end{figure}
+    
+    
+    Since $G$ is a complete graph and $\forall{e \in E, w(e) \le 2}$, thus the replacement operation can be done and the cost of $G'$ is increased by at most 1.
+    
+    \item If the weight of any edge in $C_1, C_2$ is 1, we just arbitrarily pick two edges from $C_1, C_2$, and merge them in the similar way.
+    
+    \item Repeat step 1-3 until there is only 1 cycle in $G'$.
+    
+    \item Output the weight of the only one cycle in $G'$.
+
+\end{enumerate}
+
+\bigskip \noindent \textbf{Analysis}
+
+\begin{itemize}
+    \item Let $M$ denote the cost of the minimum cost 2-matching, $OPT$ denote the optimal solution of TSP problem, $\mathcal{A}$ denote the approximation solution produced by our algorithm.
+    
+    \item There are $n$ edges in a TSP cycle, and the weight of such edges are at least $1$, hence we have $OPT \ge n$.
+    
+    \item The same is true for $M$. There are $n$ edges in $M$ (since $M$ is actually the edges of $G'$, and $G'$ is the graph consisting of disjoint cycle with $n$ vertices), thus $M \ge n$.
+    
+    \item Since $OPT$ is also a 2-matching and $M$ is the minimum 2-matching, we have $n \le M \le OPT$.
+    
+    \item Suppose there are $N$ disjoint cycles in $G'$. Since each cycle contains at least 3 vertices, thus we have $N \le n/3$.
+    
+    \item Each merge operation will increase at most 1 weight to $G'$ (see step-2 in the algorithm described above), and we need $N-1$ merge operation.
+    Thus after merging, the weight of the only one cycle in  $G'$ is $ \mathcal{A}$, and $\mathcal{A} \le M + N - 1$.
+    
+    \item Therefore, we can have:
+    $$
+    \mathcal{A} \le M + N - 1 \le OPT + \frac{n}{3} - 1 \le OPT + \frac{OPT}{3} = \frac{4}{3} \cdot OPT
+    $$
+\end{itemize}
+
+\newpage \noindent \textbf{Tight Example} \bigskip
+
+Here is the tight example, some edges are hidden in the following figure.
+
+\begin{figure}[htp]
+\centering
+\includegraphics[width=9cm]{images/A5Q9-2.png}
+\caption{A tight example for our algorithm}
+\end{figure}
+
+By the minimum cost 2-matching algorithm, we can get $G'$, which contains two cycles $C_1 = (a, b, c)$ and $C_2 = (d,e,f)$.
+
+\smallskip
+
+Then our algorithm will replace $(b, c), (d, e)$ with $(c,e), (b, d)$, and we finally get the approximation solution $(a,c,e,f,d,b,a)$ whose weight is $8$. However, the optimal solution here is $(a,c,d,f,e,b,a)$ whose weight is $6$.
+
+
+} % end of large
+
+\end{document}

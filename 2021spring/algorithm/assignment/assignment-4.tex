@@ -1,0 +1,587 @@
+\documentclass{article}
+\usepackage{times}
+\usepackage{a4wide}
+\usepackage{latexsym}
+\usepackage{mathrsfs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{ifthen}
+\usepackage{stmaryrd}
+\usepackage{algorithm}
+%\usepackage{algorithmic}
+\usepackage{algpseudocode}
+\usepackage{graphics}
+\usepackage{epsfig}
+%\usepackage{ramacros}
+
+\addtolength{\textwidth}{20mm}
+\addtolength{\oddsidemargin}{-10mm}
+\addtolength{\textheight}{18mm}
+\addtolength{\topmargin}{-9mm}
+
+\newcounter{exercise}
+\setcounter{exercise}{0}
+\newcommand{\exercise}{
+        \addtocounter{exercise}{1}
+        \vspace{0.2in}
+        \noindent
+        {\bf \theexercise .}
+        }
+
+\newcommand{\REMARK}[1]{}
+
+
+\newcommand{\NEWPART}{\vspace{.1in}
+              \noindent}
+
+\newcommand{\<}{
+    \langle}
+
+\renewcommand{\>}{
+    \rangle}
+
+\newcommand{\ceil}[1]{\left\lceil #1 \right\rceil}
+
+\pagestyle{plain} \pagenumbering{arabic}
+
+\title{{\bf Assignment 4} }
+\author{Xian Jianbang - 120037910056}
+\date{2021/05/20}
+
+\begin{document}
+\maketitle
+
+%{\large \noindent
+%\begin{tabular}{lcl}
+%{Jan 17 2007}.
+%\end{tabular}
+%}
+
+% Complete: 1, 6, 8
+% [V] 2 cycle, 不是很懂，如果这个环不能包括所有顶点怎么办
+% [V] 3 4 is together: 3 其实是证明凸优化问题的 Weak Duality
+% [V] 5 complementary slackness
+% 7 Konig Theorem
+
+{\large
+
+\noindent \textbf{\textit{Notice}} - In this document, the "\textbf{\textit{standard form}}" and "\textbf{\textit{slack form}}" are defined according to the textbook \textit{CLRS - Introduction to Algorithms} .
+
+\begin{exercise} 
+Transform following problems into linear programming
+	
+	(1)
+		$$\begin{aligned}
+		&\text { maximize } & 5x+2y\\
+		&\text { subject to } & 0 \le x \le 20 \\
+		& & |x - y|\le 5
+		\end{aligned}$$
+		
+	(2)
+		$$\begin{aligned}
+		&\text { maximize }  & min(x_1,x_2,x_3)\\
+		&\text { subject to }  & x_1+x_2+x_3 = 15
+		\end{aligned}$$
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+1) Obviously, we have:
+\begin{equation}
+\begin{aligned}
+&\text{ maximize }   & 5x + 2y_1 - 2y_2    \\
+&\text{ subject to } & x - y_1 + y_2 \le 5 \\
+& & -x + y_1 - y_2 \le 5 \\
+& & x \le 20 \\
+& & x, y_1, y_2 \ge 0
+\end{aligned}
+\end{equation}
+
+
+
+2) First, let $y = min(x_1, x_2, x_3)$, then we have the equivalent linear programming:
+\begin{equation}
+\begin{aligned}
+& \text{ maximize } & y \\
+& \text{ subject to } & y \le x_1 \\
+& & y \le x_2 \\
+& & y \le x_3 \\
+& & x_1 + x_2 + x_3 \le 15 \\
+& & -x_1 - x_2 - x_3 \le -15
+\end{aligned}
+\end{equation}
+
+And we can convert it into \textit{\textbf{standard form}}:
+\begin{equation}
+\begin{aligned}
+& \text{ maximize } & y - y' \\
+& \text{ subject to } & y - y' - x_1 + x_1' &\le 0 \\
+& & y - y' - x_2 + x_2' &\le 0 \\
+& & y - y' - x_3 + x_3' &\le 0 \\
+& & x_1 - x_1' + x_2 - x_2' + x_3 - x_3' &\le 15 \\
+& & -x_1 + x_1' - x_2 + x_2' - x_3 + x_3' &\le -15 \\
+& & y, y', x_1, x_1', x_2, x_2', x_3, x_3' &\ge 0
+\end{aligned}
+\end{equation}
+
+\newpage
+
+\begin{exercise}
+	Given a graph $G$, each vertex $v_i$ has a profit $p_i$ and each edge $e_{ij}$ has a cost $c_{ij}$. Define the profit of a cycle is the total profits of all the vertices in the cycle, and the cost of a cycle is the total costs of all the edges in the cycle. We need to find a simple cycle in $G$ which contains a given vertex $v_0$, and maximize the profit of it within the cost bound $B$. Write the linear programming formulation of this problem.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+Let:
+\begin{itemize}
+    \item $d_{ij} \in \{0, 1\}$ represent whether edge $(i, j)$ is in the result,
+    \item $x_i \in \{0, 1\}$ represent whether vertex $v_i$ is in the result.
+\end{itemize}
+
+Then we have:
+
+\begin{equation}
+\begin{aligned}
+\text{ maximize } & \sum_{i \in V} p_ix_i \\
+\text{ subject to } & \sum_{(i, j) \in E} c_{ij}d_{ij} \le B \\
+& \sum_{(v, j) \in E} d_{vj} = 1, \forall{v \in V} \\
+& \sum_{(i, v) \in E} d_{iv} = 1, \forall{v \in V} \\
+& x_{v_0} = 1 \\
+& d_{ij}, e_i \in \{0,1\} \text{ for any } i,j
+\end{aligned}
+\end{equation}
+
+in which:
+\begin{itemize}
+    \item $\sum_{(i, j) \in E} c_{ij}d_{ij} \le B$ indicates that our cost is within the bound $B$,
+    \item $\sum_{(v, j) \in E} d_{vj} = 1$ and $\sum_{(i, v) \in E} d_{iv} = 1$ indicate that for any vertex $v$, once entering $v$, it must come out once (and only once). This implies the path we choose is a simple cycle. If $G$ is a undirected graph, we can replace these two constraints with $\sum_{(v,j) \in E} d_{vj} = 2$, 
+    \item $x_{v_0} = 1$ indicates that $v_0$ is included in the simple cycle.
+\end{itemize}
+
+
+
+
+
+
+
+\begin{exercise}
+	Consider the following optimization problem
+	$$\begin{aligned}
+		&\text { minimize } \quad f_{0}(\mathbf{x})\\
+		&\text { subject to } f_{i}(\mathbf{x}) \leq 0, \quad i=1, \ldots, m
+	\end{aligned}$$
+	with variable $\mathbf{x}=\left(x_{1}, \ldots, x_{n}\right) \in \mathbf{R}^{n} .$ Note that the program may not be linear. The Lagrangian
+	$L: \mathbf{R}^{n} \times \mathbf{R}^{m} \rightarrow \mathbf{R}$ associated with the program is defined as
+	$$
+	L(\mathbf{x}, \lambda)=f_{0}(\mathbf{x})+\sum_{i=1}^{m} \lambda_{i} f_{i}(\mathbf{x})
+	$$
+	where $\lambda=\left(\lambda_{1}, \ldots, \lambda_{m}\right) \in \mathbf{R}^{m}$
+	
+	Define the Lagrange dual function $g: \mathbf{R}^{m} \rightarrow \mathbf{R}$ as the minimum value of the Lagrangian over $x$ :
+	for $\lambda \in \mathbf{R}^{m}$,
+	$$
+	g(\lambda)=\inf _{\mathbf{x}} L(\mathbf{x}, \lambda)
+	$$
+	We write $\lambda \geq 0$ if $\lambda_{i} \geq 0$ for all $1 \leq i \leq m$ and let $p^{*}$ be the optimal value of original program.
+	
+	Show that:
+	$$
+	g(\lambda) \leq p^{*} , \text{ for every } \lambda \geq 0
+	$$
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+This is actually to prove the \textit{\textbf{weak duality}}.
+
+\bigskip
+
+Since $\lambda_{i} > 0$ and $f_i(\textbf{x}) \le 0$, we have:
+\begin{equation}
+\sum_{i=1}^{m} \lambda_i f_i(\textbf{x}) \le 0
+\end{equation}
+
+Hence $L(\textbf{x}, \lambda) \le f_0(\textbf{x})$, for any feasible solution \textbf{x}.
+
+\bigskip
+
+Since $g(\lambda), \lambda \in \textbf{R}^m$ is the minimum value of the Lagrangian over $\textbf{x}$, we have:
+\begin{equation}
+g(\lambda) \le L(\textbf{x}, \lambda) \le f_0(\textbf{x})
+\end{equation}
+
+The above inequality holds for any feasible solution \textbf{x}, and $p^*$ is one of these solutions (and it is the optimal one), thus we have:
+\begin{equation}
+    g(\lambda) \le p^*
+\end{equation}
+
+	
+\begin{exercise}
+	Consider the following optimization problem
+	$$\begin{aligned}
+	&\text { maximize } g(\lambda)\\
+	&\text { subject to } \lambda \ge 0
+	\end{aligned}$$
+	Show that if the program in previous exercise is a linear program, then this program is its dual program.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+If it is a linear program, we can rewrite it as:
+\begin{equation}
+\begin{aligned}\label{equref4.1}
+& \text{ minimize } & \textbf{c}^T \textbf{x} \\
+& \text{ subject to } & \textbf{Ax} \le \textbf{b}
+\end{aligned}
+\end{equation}
+where $f_0(\textbf{x}) = \textbf{c}^T \textbf{x}$ and $f_i(\textbf{x}), 1 \le i \le m$ is one row in $\textbf{Ax} - \textbf{b}$.
+
+And we rewrite (\ref{equref4.1}) in \textbf{\textit{maximize form}}:
+\begin{equation}
+\begin{aligned}
+& \text{ maximize } & -\textbf{c}^T \textbf{x} \\
+& \text{ subject to } & \textbf{Ax} \le \textbf{b}
+\end{aligned}
+\end{equation}
+
+Then the dual of original problem is:
+\begin{equation}\label{equref4.2}
+\begin{aligned}
+& \text{ minimize } & \textbf{b}^T \textbf{y} \\
+& \text{ subject to } & \textbf{A}^T \textbf{y} \ge \textbf{-c}
+\end{aligned}    
+\end{equation}
+
+Rewrite (\ref{equref4.2}) in \textbf{\textit{maximize form}}:
+\begin{equation}\label{equref4.3}
+\begin{aligned}
+& \text{ maximize } & -\textbf{b}^T \textbf{y} \\
+& \text{ subject to } & \textbf{A}^T \textbf{y} + \textbf{c} \ge \textbf{0} 
+\end{aligned}
+\end{equation}
+
+Now we need to prove that $g(\lambda) = -\textbf{b}^T \lambda$, where $\lambda \in \textbf{R}^m$ is a column-vector.
+
+Obviously, we have:
+\begin{equation}
+\begin{aligned}
+L(\mathbf{x}, \lambda) &= f_{0}(\mathbf{x})+\sum_{i=1}^{m} \lambda_{i}f_{i}(\mathbf{x}) \\
+&= \textbf{c}^T \textbf{x} + \lambda^{T} (\textbf{Ax} - \textbf{b}) \\
+&= (\textbf{c}^T + \lambda^{T} \textbf{A})\textbf{x} - \lambda^T \textbf{b}
+\end{aligned}
+\end{equation}
+
+Since $g(\lambda)$ is the minimum value of $L(\textbf{x}, \lambda)$, we have:
+\begin{equation}
+g(\lambda)=\left\{
+\begin{aligned}
+-\lambda^T \textbf{b}, & \text{ if } \textbf{c}^T + \lambda^{T} \textbf{A} \ge \textbf{0} \\
+-\infty, & \text{ otherwise }
+\end{aligned}
+\right.
+\end{equation}
+
+And $\textbf{c}^T + \lambda^{T} \textbf{A} \ge \textbf{0}$ {if and only if} $\textbf{c} + \textbf{A}^T \lambda \ge \textbf{0}$ (just transpose the matrix).
+
+\bigskip
+
+Now we have proved that $g(\lambda) = -\lambda^T \textbf{b}$ under the constraint $\textbf{A}^T \lambda + \textbf{c} \ge \textbf{0}$. That is to say:
+\begin{equation}
+\begin{aligned}
+& \text{ maximize }  & g(\lambda) = -\lambda^T \textbf{b} \\
+& \text{ subject to } & \textbf{A}^T \lambda + \textbf{c} \ge \textbf{0} \\
+& &  \lambda \ge \textbf{0} 
+\end{aligned}
+\end{equation}
+
+It is equivalent to the dual problem described in (\ref{equref4.3}).
+
+
+\begin{exercise}
+	Prove the complementary slackness property of linear programs.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+Given the following primal LP instance in \textbf{\textit{standard form}}:
+\begin{equation}
+\begin{aligned}
+& \text{ maximize } & \textbf{c}^T \textbf{x} \\
+& \text{ subject to } & \textbf{Ax} \le \textbf{b} \\
+& & x \ge 0 \text{ for any } x \text{ in } \textbf{x}
+\end{aligned}
+\end{equation}
+
+where \textbf{A} is a matrix, \textbf{x, b, c} are column-vectors, and $|\textbf{x}| = |\textbf{c}| = n, |\textbf{A}| = m \times n$, $|\textbf{b}| = m$.
+
+And its dual is:
+\begin{equation}
+\begin{aligned}
+& \text{ minimize }   & \textbf{b}^T \textbf{y} \\
+& \text{ subject to } & \textbf{A}^T \textbf{y} \ge \textbf{c} \\
+& & y \ge 0 \text{ for any } y \text{ in } \textbf{y}
+\end{aligned}
+\end{equation}
+
+where $|\textbf{y}| = m$ and $|\textbf{A}^T| = n \times m$. Let $a_{ij}$ be the value of \textbf{A}$[i,j]$.
+
+\bigskip
+
+\noindent \textbf{Theorem} \textit{(Complementary Slackness)} Let $\textbf{x}$ be a feasible solution to the primal LP and $\textbf{y}$ be a feasible solution to the dual LP. Then $\textbf{x}$ is optimal to the primal LP and $\textbf{y}$ is optimal to the dual LP \textbf{if and only if} the conditions of \textit{complementary slackness} hold:
+
+\begin{equation}
+\begin{aligned}
+(b_i - \sum_{j=1}^{n}a_{ij}x_j)y_i = 0, \text{ for } i \in [1, m] \\
+(\sum_{i=1}^{m}a_{ji}y_i - c_j)x_j = 0, \text{ for } j \in [1, n]
+\end{aligned}
+\end{equation}
+
+\bigskip
+
+\noindent \textbf{Lemma} \textit{(Weak Duality)} If $\textbf{x}$ is a feasible solution for primal, and $\textbf{y}$ is a feasible solution for dual, then $\textbf{c}^T \textbf{x} \le \textbf{b}^T \textbf{y}$.
+
+\bigskip
+
+\noindent \textbf{\textit{Proof}} \textit{(Weak Duality)}
+
+Obviously, we have:
+\begin{itemize}
+    \item $\textbf{A}^T \textbf{y} \ge \textbf{c}$ implies $\textbf{x}^T \textbf{A}^T \textbf{y} \ge \textbf{x}^T \textbf{c}$ where $\textbf{x}^T \textbf{c} = \textbf{c}^T \textbf{x}$ (since $\textbf{c}^T \textbf{x}$ is $1 \times 1$.)
+    \item $\textbf{A} \textbf{x} \le \textbf{b}$ implies $\textbf{y}^T \textbf{A} \textbf{x} \le \textbf{y}^T \textbf{b}$ where $\textbf{y}^T \textbf{b} = \textbf{b}^T \textbf{y}$
+\end{itemize}
+
+Hence
+\begin{equation}\label{equref5.2}
+\begin{aligned}
+\textbf{c}^T \textbf{x} = \textbf{x}^T \textbf{c} \le \textbf{x}^T \textbf{A}^T \textbf{y} = \textbf{y}^T \textbf{A} \textbf{x} \le \textbf{y}^T \textbf{b} = \textbf{b}^T \textbf{y} 
+% \Rightarrow \textbf{c}^T \textbf{x} \le \textbf{b}^T \textbf{y} 
+\end{aligned}
+\end{equation}
+
+\bigskip
+
+
+\noindent \textbf{\textit{Proof}} \textit{(Complementary Slackness)}
+\begin{itemize}
+    \item $\textbf{x}$ and $\textbf{y}$ are both optimal for their respective LPs \\
+    $\iff$ (by weak duality)
+    \item $\textbf{c}^T \textbf{x} = \textbf{b}^T \textbf{y}$ \\
+    $\iff$ (since $\textbf{b}^T \textbf{y}$ is $1 \times 1$, and recall $\textbf{c}^T \textbf{x} \le \textbf{y}^T \textbf{Ax} \le \textbf{y}^T \textbf{b}$) 
+    \item $\textbf{c}^T \textbf{x} = \textbf{y}^T \textbf{Ax}$ and $\textbf{y}^T \textbf{Ax} = \textbf{y}^T \textbf{b}$ \\
+    $\iff$ (Algebra)
+    \item $(\textbf{A}^T \textbf{y} - \textbf{c})^T \textbf{x} = \textbf{x}^T (\textbf{A}^T \textbf{y} - \textbf{c})= 0$ and $\textbf{y}^T (\textbf{Ax} - \textbf{b}) = 0$ . \\
+    $\iff$
+    \item The complementary slackness conditions hold.
+\end{itemize}
+
+
+
+\begin{exercise}
+	Write the dual problem of:
+	$$\begin{aligned}
+	&\text { maximize } & c^Tx\\
+	&\text { subject to } & A_1x\le b_1 \\
+	& &A_2x \ge b_2 \\
+	& &A_3x = b_3
+	\end{aligned}$$
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+First, we convert it into:
+\begin{equation}
+\begin{aligned}
+& \text{ maximize }   & c^Tx \\
+& \text{ subject to } & A_1x & \le b_1 \\
+& & -A_2x & \le -b_2 \\
+& & A_3x  & \le b_3 \\
+& & -A_3x & \le -b_3 \\
+\end{aligned}
+\end{equation}
+
+The matrices $A_i$ have the same number of columns, and the $b_i$ is a column-vector. And we let:
+$$
+\textbf{A} = 
+\begin{bmatrix}
+A_1 \\
+-A_2 \\
+A_3 \\
+-A_3
+\end{bmatrix},
+\textbf{b} = 
+\begin{bmatrix}
+b_1 \\
+-b_2 \\
+b_3 \\
+-b_3
+\end{bmatrix}
+$$
+
+Then we can have the dual of the primal problem:
+\begin{equation}
+\begin{aligned}
+& \text{ minimize } & \textbf{b}^T y \\
+& \text{ subject to } & \textbf{A}^T y \ge c
+\end{aligned}
+\end{equation}
+
+
+\begin{exercise}
+	Prove the König theorem: Let G be bipartite, then cardinality of maximum matching = cardinality of minimum vertex cover.
+\end{exercise}
+
+% 参考这个：https://www.arcjournals.org/pdfs/ijsimr/v3-i5/8.pdf
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+Let $G=(V,E)$ be a bipartite graph and $X,Y$ be the two partitions of $V$. Let $|X|=m, |Y|=n$ and $1,2, \dots, n \in X$, $m+1, m+2, \dots, m+n \in Y$.
+
+\medskip
+
+Assume that $E$ is non-empty and $|E|=r$. Let $q_{ij} \in \{0, 1\}$ denote whether edge $(i,j)$ is in the maximum matching. Then we can rewrite the maximum matching problem as LP:
+\begin{equation}
+\begin{aligned}\label{equref7.1}
+\text{ maximize } & \sum_{(i,j) \in E} q_{ij} \\
+\text{ subject to } & \sum_{j:(i,j) \in E} q_{ij} \le 1, \forall{i \in X} \\
+& \sum_{i:(i,j) \in E} q_{ij} \le 1, \forall{j \in Y} \\
+& q_{ij} \in \{0,1\}, \forall{(i,j) \in E}
+\end{aligned}
+\end{equation}
+
+Since the constraints $\sum q_{ij} \le 1$, we can relax $q_{ij} \in \{0,1\}$ to $q_{ij} \ge 0$. And it still keeps $q_{ij} \in \{0, 1\}$. That is to say:
+\begin{equation}\label{equref7.2}
+\begin{aligned}
+\text{ maximize } & \sum_{(i,j) \in E} q_{ij} \\
+\text{ subject to } & \sum_{j:(i,j) \in E} q_{ij} \le 1, \forall{i \in X} \\
+& \sum_{i:(i,j) \in E} q_{ij} \le 1, \forall{j \in Y} \\
+& q_{ij} \ge 0, \forall{(i,j) \in E}
+\end{aligned}
+\end{equation}
+
+(\ref{equref7.2}) is equivalent to (\ref{equref7.1}). 
+
+\medskip
+
+Now we prove that the dual of (\ref{equref7.2}) is the LP of vertex cover problem.
+
+\medskip
+
+Let $p_i$ and $p_j$ where $i \in X, j \in Y, 0 \le p_i, p_j \le 1$ be the dual variables corresponding to the first and second set of constraints, respectively, and
+\begin{equation}
+\begin{aligned}
+\textbf{x} = \begin{bmatrix}
+q_{ij} \\
+\vdots \\
+\vdots
+\end{bmatrix},
+\textbf{c} = \begin{bmatrix}
+1 \\
+1 \\
+\vdots \\
+1
+\end{bmatrix},
+\textbf{b} = \begin{bmatrix}
+1 \\
+1 \\
+\vdots \\
+1
+\end{bmatrix},
+\textbf{y} = \begin{bmatrix}
+p_1 \\
+\vdots \\
+p_m \\
+p_{m+1} \\
+\vdots \\
+p_{m+n}
+\end{bmatrix}
+\end{aligned}
+\end{equation}
+
+\newpage
+
+We can rewrite (\ref{equref7.2}) in \textbf{\textit{standard form}}:
+\begin{equation}\label{equref7.3}
+\begin{aligned}
+\text{ maximize } & \textbf{c}^T \textbf{x} \\
+\text{ subject to } & \textbf{Ax} \le \textbf{b} \\
+& \textbf{x} \ge \textbf{0}
+\end{aligned}
+\end{equation}
+
+And in such case, what is the matrix $\textbf{A}$ in (\ref{equref7.3}) ? In the matrix \textbf{A}, with respect to a variable $q_{ij}$, every column has two "1" (at most) corresponding to $i^{\text{th}}$ and $j^{\text{th}}$ rows. Thus, in $\textbf{A}^T$, every row has two "1", one in the $i^{\text{th}}$ column and other in the $j^{\text{th}}$ column.
+
+Therefore, in the dual, the set of constraints $\textbf{A}^T \textbf{y} \ge \textbf{c}$ can rewrite as:
+\begin{equation}
+p_i + p_j \ge 1, \forall{(i,j) \in E}
+\end{equation}
+
+Along with the non-negativity constraints, the dual of (\ref{equref7.2}) should be:
+\begin{equation}
+\begin{aligned}
+\text{ minimize } & \sum_{i \in X} p_i + \sum_{j \in Y} p_j \\
+\text{ subject to } & p_i + p_j \ge 1, \forall{(i, j) \in E} \\
+& p_i \in \{0, 1\}, \forall{i \in X} \\
+& p_j \in \{0, 1\}, \forall{j \in Y}
+\end{aligned}
+\end{equation}
+
+And this is the LP of vertex cover problem. Hence the König theorem is proved.
+
+
+
+\begin{exercise}
+	Show that the dual of the dual of a linear program is the primal linear program.
+\end{exercise}
+
+\bigskip \noindent \textbf{Solution} \bigskip
+
+Given any LP instance, we can transform it into \textbf{\textit{standard form}}:
+\begin{equation}\label{equref8.0}
+\begin{aligned}
+& \text{ maximize } & \textbf{c}^T \textbf{x} \\
+& \text{ subject to } & \textbf{A} \textbf{x} \le \textbf{b} \\
+& & x \ge 0 \text{ for any } x \text{ in } \textbf{x}
+\end{aligned}
+\end{equation}
+
+where \textbf{A} is a matrix, \textbf{x}, \textbf{c} and \textbf{b} are the column-vector. 
+
+Assume that $|\textbf{x}| = |\textbf{c}| = n, |\textbf{A}| = m \times n$ and $|\textbf{b}| = m$.
+
+The corresponding dual is:
+\begin{equation}\label{equref8.1}
+\begin{aligned}
+& \text{ minimize } & \textbf{b}^T \textbf{y} \\
+& \text{ subject to } & \textbf{A}^T \textbf{y} \ge \textbf{c} \\
+& & y \ge 0 \text{ for any } y \text{ in } \textbf{y}
+\end{aligned}
+\end{equation}
+
+where $|\textbf{y}| = m$, and it is equal to the column of $\textbf{A}^T$.
+
+And the dual of (\ref{equref8.1}) is:
+\begin{equation}
+\begin{aligned}
+& \text{ maximize } & \textbf{c}^T \textbf{z} \\
+& \text{ subject to } & (\textbf{A}^T)^T \textbf{z} \le (\textbf{b}^T)^T \\
+& & z \ge 0 \text{ for any } z \text{ in } \textbf{z},
+\end{aligned}
+\end{equation}
+
+and this is equivalent to:
+\begin{equation}\label{equref8.2}
+\begin{aligned}
+& \text{ maximize } & \textbf{c}^T \textbf{z} \\
+& \text{ subject to } & \textbf{A} \textbf{z} \le \textbf{b} \\
+& & z \ge 0 \text{ for any } z \text{ in } \textbf{z},
+\end{aligned}
+\end{equation}
+
+where $|\textbf{z}| = n$.
+
+And we can see that (\ref{equref8.2}) is equivalent to (\ref{equref8.0}). Hence the dual of the dual of a linear program is the primal linear program.
+
+} % end of large
+
+\end{document}
